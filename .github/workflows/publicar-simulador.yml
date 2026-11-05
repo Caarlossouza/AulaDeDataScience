@@ -1,0 +1,42 @@
+name: Publicar simulador de Ciência de Dados
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'simulador-ciencia-dados/**'
+      - '.github/workflows/publicar-simulador.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Habilitar GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Preparar site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./simulador-ciencia-dados
+
+      - name: Publicar site
+        id: deployment
+        uses: actions/deploy-pages@v4
